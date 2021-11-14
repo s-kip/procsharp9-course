@@ -1,18 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 
-// TODO: As a top-level statements exercise, use only this single file to define everything!
-
 if (args.Length != 1)
 {
-    // TODO: define local PrintHelp function to print help and exit
+    PrintHelp();
+    return;
 }
 
-// TODO: utilize https://swapi.dev/ to search for a person with a given name
-//       Hint: Use https://swapi.dev/documentation and look for "Searching"
 using HttpClient client = new HttpClient();
-var requestUri = "?";
+var requestUri = $"https://swapi.dev/api/people/?search={args[0]}";
 var response = await client.GetFromJsonAsync<PersonsDTO>(requestUri);
 
 if (response?.Count != 1)
@@ -21,10 +19,17 @@ if (response?.Count != 1)
 }
 else
 {
-    // TODO: 
-    Console.WriteLine($"{person.Name} was born {person.Birth_Year}.");
+    foreach (var person in response.Results)
+    {
+        Console.WriteLine($"{person.Name} was born {person.Birth_Year}.");
+    } 
 }
 
-// TODO: define PersonDTO and PersonsDTO records to deserialize (only necessary)
-//       fields from https://swapi.dev/api/people/?search=... results.
+void PrintHelp()
+{
+    Console.WriteLine("Not enough arguments. Exit program");
+}
 
+record PersonDto (string Name, string Birth_Year);
+
+record PersonsDTO (int Count, IList<PersonDto> Results);
