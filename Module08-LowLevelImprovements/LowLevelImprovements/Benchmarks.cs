@@ -14,10 +14,13 @@ namespace LowLevelImprovements
         [GlobalSetup]
         public void GlobalSetup()
         {
-            if (Mixer.Before(Guid1, Guid2, Mix) != Mixer.After(Guid1, Guid2, Mix))
+            unsafe
             {
-                // this is a really dummy unit test :-)
-                throw new Exception("Implementation has changed!");
+                if (Mixer.Before(Guid1, Guid2, Mix) != Mixer.After(Guid1, Guid2, &Mix))
+                {
+                    // this is a really dummy unit test :-)
+                    throw new Exception("Implementation has changed!");
+                }
             }
         }
 
@@ -30,7 +33,10 @@ namespace LowLevelImprovements
         [Benchmark()]
         public Guid After()
         {
-            return Mixer.After(Guid1, Guid2, Mix);
+            unsafe
+            {
+                return Mixer.After(Guid1, Guid2, &Mix);
+            }
         }
     }
 }
